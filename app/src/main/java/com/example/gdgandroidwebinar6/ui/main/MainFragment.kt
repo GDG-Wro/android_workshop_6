@@ -1,11 +1,10 @@
 package com.example.gdgandroidwebinar6.ui.main
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.gdgandroidwebinar6.R
 import com.example.gdgandroidwebinar6.domain.Forecast
@@ -27,6 +26,7 @@ class MainFragment : Fragment(R.layout.main_fragment) {
             val weatherAdapter = WeatherAdapter()
             adapter = weatherAdapter
             layoutManager = LinearLayoutManager(context)
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             weatherAdapter.submitList(
                 listOf(
                     Forecast(
@@ -36,6 +36,14 @@ class MainFragment : Fragment(R.layout.main_fragment) {
                         temperature = 10.2,
                         maxTemperature = 11.0,
                         minTemperature = 8.1
+                    ),
+                    Forecast(
+                        date = LocalDate.now().plusDays(1),
+                        description = "Test description 2",
+                        icon = "https://www.metaweather.com/static/img/weather/png/t.png".toHttpUrl(),
+                        temperature = 5.2,
+                        maxTemperature = 5.0,
+                        minTemperature = 2.1
                     )
                 )
             )
