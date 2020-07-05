@@ -2,7 +2,7 @@ package com.example.gdgandroidwebinar6.api
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import java.time.LocalDate
+import org.threeten.bp.LocalDate
 
 @JsonClass(generateAdapter = true)
 data class Forecast(

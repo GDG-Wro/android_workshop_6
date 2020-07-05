@@ -9,6 +9,9 @@ abstract class WeatherDao {
     @Query("SELECT * from forecast ORDER BY date ASC")
     abstract fun getForecasts(): Flow<List<ForecastEntity>>
 
+    @Query("SELECT COUNT(*) from forecast")
+    abstract suspend fun getForecastCount(): Long
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insert(forecasts: List<ForecastEntity>)
 

@@ -16,7 +16,7 @@ class ForecastViewHolder(override val containerView: View) : RecyclerView.ViewHo
         icon.load(forecast.icon) {
             error(R.drawable.ic_warning)
         }
-        date.text = forecast.date.format(DateTimeFormatter.ofPattern("EEEE, d LLL yyyy"))
+        date.text = forecast.date.format(DateTimeFormatter.ofPattern("EEE, d LLL yyyy"))
         temperature.text = context.getString(R.string.degree_format, forecast.temperature)
         description.text = forecast.description
         temperatureRange.text = context.getString(
