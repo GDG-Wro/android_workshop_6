@@ -10,12 +10,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.gdgandroidwebinar6.R
-import com.example.gdgandroidwebinar6.domain.Forecast
+import com.example.gdgandroidwebinar6.clicks
 import kotlinx.android.synthetic.main.main_fragment.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import org.threeten.bp.LocalDate
 
 private val Fragment.viewCoroutineScope: LifecycleCoroutineScope
     get() = viewLifecycleOwner.lifecycleScope
@@ -35,8 +33,8 @@ class MainFragment : Fragment(R.layout.main_fragment) {
     }
 
     private fun setUpRefreshButton() {
-        refreshButton.setOnClickListener {
-            lifecycleScope.launch {
+        lifecycleScope.launch {
+            refreshButton.clicks().collect {
                 val isSuccessful = viewModel.fetchForecastAsync().await()
                 if (!isSuccessful) {
                     Toast.makeText(context, R.string.fetch_error, Toast.LENGTH_LONG).show()
