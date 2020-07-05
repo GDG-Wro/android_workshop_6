@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.gdgandroidwebinar6.R
 import com.example.gdgandroidwebinar6.clicks
+import com.example.gdgandroidwebinar6.consume
 import kotlinx.android.synthetic.main.main_fragment.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -35,12 +36,7 @@ class MainFragment : Fragment(R.layout.main_fragment) {
 
     private fun setUpRefreshButton() {
         viewCoroutineScope.launch {
-            refreshButton.clicks().collect {
-                val isSuccessful = viewModel.fetchForecastAsync().await()
-                if (!isSuccessful) {
-                    Toast.makeText(context, R.string.fetch_error, Toast.LENGTH_LONG).show()
-                }
-            }
+            refreshButton.clicks().collect { viewModel.fetchForecast() }
         }
     }
 
@@ -49,10 +45,17 @@ class MainFragment : Fragment(R.layout.main_fragment) {
         adapter = weatherAdapter
         layoutManager = LinearLayoutManager(context)
         addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        observeUiModels(weatherAdapter)
+    }
+
+    private fun observeUiModels(weatherAdapter: WeatherAdapter) {
         viewCoroutineScope.launch {
             viewModel.models.collect {
                 weatherAdapter.submitList(it.forecasts)
                 loadingContainer.isVisible = it.isLoading
+                it.error.consume {
+                    Toast.makeText(context, R.string.fetch_error, Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
