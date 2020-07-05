@@ -4,15 +4,28 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gdgandroidwebinar6.domain.WeatherRepository
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 
 class MainViewModel(private val weatherRepository: WeatherRepository) : ViewModel() {
-    fun fetchForecastAsync() = viewModelScope.async {
-        weatherRepository.fetchForecast()
+    private val _models = MutableStateFlow(MainUiModel())
+    val models: StateFlow<MainUiModel> = _models
+
+    init {
+        viewModelScope.launch {
+            weatherRepository.getForecast()
+                .onStart { if (!weatherRepository.hasForecast()) fetchForecastAsync() }
+                .collect { _models.value = models.value.copy(forecasts = it) }
+        }
     }
 
-    fun getModels() = weatherRepository.getForecast()
-        .onStart { if (!weatherRepository.hasForecast()) fetchForecastAsync() }
-        .map { MainUiModel(forecasts = it) }
+    fun fetchForecastAsync() = viewModelScope.async {
+        _models.value = models.value.copy(isLoading = true)
+        val isSuccessful = weatherRepository.fetchForecast()
+        _models.value = models.value.copy(isLoading = false)
+        return@async isSuccessful
+    }
 }

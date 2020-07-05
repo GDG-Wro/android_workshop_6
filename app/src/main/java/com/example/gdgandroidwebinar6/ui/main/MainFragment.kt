@@ -3,6 +3,7 @@ package com.example.gdgandroidwebinar6.ui.main
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleCoroutineScope
@@ -33,7 +34,7 @@ class MainFragment : Fragment(R.layout.main_fragment) {
     }
 
     private fun setUpRefreshButton() {
-        lifecycleScope.launch {
+        viewCoroutineScope.launch {
             refreshButton.clicks().collect {
                 val isSuccessful = viewModel.fetchForecastAsync().await()
                 if (!isSuccessful) {
@@ -49,8 +50,9 @@ class MainFragment : Fragment(R.layout.main_fragment) {
         layoutManager = LinearLayoutManager(context)
         addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         viewCoroutineScope.launch {
-            viewModel.getModels().collect {
+            viewModel.models.collect {
                 weatherAdapter.submitList(it.forecasts)
+                loadingContainer.isVisible = it.isLoading
             }
         }
     }
